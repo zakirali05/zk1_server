@@ -1,3 +1,5 @@
+const { resetPassword } = require("../controllers/userControllers")
+
 const { isAuthenticated } = require("../middleware/isAuthenticated")
 
 const { loginUser } = require("../controllers/userControllers")
@@ -19,7 +21,7 @@ router.post("/login", loginUser)
 router.get('/:id', getUserById)
 router.post("/", createUser)
 router.delete("/:id", isAuthenticated, deleteUser)
-
+router.put('/reset-password', isAuthenticated, resetPassword)
 
 
 
