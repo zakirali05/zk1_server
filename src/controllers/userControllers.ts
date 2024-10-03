@@ -1,5 +1,7 @@
 
 import { prismaDB } from "../server";
+const bcrypt = require("bcrypt")
+const jwt = require("jsonwebtoken")
 
 export const getAllUsers = async (req: any, res: any) => {
     try {
@@ -15,22 +17,46 @@ export const getAllUsers = async (req: any, res: any) => {
 
 export const createUser = async (req: any, res: any) => {
     try {
-        const body = req.body
+        const email = req.body.email
+        const password = req.body.password
+        const saltRounds = 10;
+        let hashedPassword = ""
+        bcrypt.genSalt(saltRounds, (err: any, salt: any) => {
+            if (err) {
+
+                return res.json({ status: 500, message: "Something went wrong in salt generation" })
+            }
+
+            bcrypt.hash(password, salt, (err: any, hash: any) => {
+                if (err) {
+                    return res.json({ status: 500, message: "Something went wrong in hashing the password" })
+                }
+
+
+                hashedPassword = hash
+            });
+        });
+
 
         const userExists = await prismaDB.user.findUnique({
             where: {
-                email: body.email
+                email: email,
+
             }
         })
 
         if (userExists) {
             return res.json({ status: 403, message: "Email already registered" })
         }
-        const users = await prismaDB.user.create({
-            data: body
+        const user = await prismaDB.user.create({
+            data: {
+                email,
+                hashedPassword
+            }
         });
+        const token = jwt.sign({ user: user.id }, process.env.JWT_SECRET);
 
-        return res.json({ status: 200, message: "User created succesfully", data: users });
+        return res.json({ status: 200, message: "User created succesfully", data: user, token });
 
     } catch (err: any) {
         return res.json({ status: 500, message: err.message });
@@ -61,6 +87,7 @@ export const getUserById = async (req: any, res: any) => {
 
 export const deleteUser = async (req: any, res: any) => {
     try {
+
         let { id } = req.params
         id = parseInt(id)
 
@@ -70,9 +97,15 @@ export const deleteUser = async (req: any, res: any) => {
             }
         })
 
+
+
         if (!userExists) {
-            return res.json({ status: 403, message: "EUser doesn't exist" })
+            return res.json({ status: 403, message: "User doesn't exist" })
         }
+        if (userExists?.id !== req?.user?.user) {
+            return res.json({ status: 401, message: "You can only delete your own account" })
+        }
+
         const user = await prismaDB.user.delete({
             where: {
                 id
@@ -85,3 +118,40 @@ export const deleteUser = async (req: any, res: any) => {
         return res.json({ status: 500, message: err.message });
     }
 };
+
+export const loginUser = async (req: any, res: any) => {
+    try {
+        const { email, password } = req.body;
+        let token = ""
+        const isUserPresentInDB = await prismaDB.user.findUnique({
+            where: {
+                email
+            }
+        })
+
+
+        if (!isUserPresentInDB) {
+            return res.json({ status: 404, message: `User with email : ${email} not found` });
+        }
+
+
+
+        bcrypt.compare(password, isUserPresentInDB.hashedPassword, (err: any, result: any) => {
+            if (err) {
+
+                return res.json({ status: 500, message: err.message });
+            }
+
+            if (result) {
+                token = jwt.sign({ user: isUserPresentInDB?.id }, process.env.JWT_SECRET);
+                return res.json({ status: 200, message: "Login Sucessfully", user: isUserPresentInDB, token })
+            } else {
+                return res.json({ status: 401, message: "Invalid passoword" });
+            }
+        });
+
+    } catch (err: any) {
+        return res.json({ status: 500, message: err.message });
+
+    }
+}

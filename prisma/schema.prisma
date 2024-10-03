@@ -10,6 +10,7 @@ datasource db {
 model User {
   id        Int       @id @default(autoincrement())
   email     String    @unique
+  hashedPassword String
   channels  Channel[]
   comments  Comment[]
   createdAt DateTime  @default(now())
