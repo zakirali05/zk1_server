@@ -1,5 +1,6 @@
 
 import { prismaDB } from "../server";
+import { isEmailValid } from "../utils/isEmailValid";
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 
@@ -18,6 +19,11 @@ export const getAllUsers = async (req: any, res: any) => {
 export const createUser = async (req: any, res: any) => {
     try {
         const email = req.body.email
+        const isEmailValidBool = await isEmailValid(email)
+        if (!isEmailValidBool) {
+            return res.json({ status: 500, message: "Email is not valid" })
+        }
+
         const password = req.body.password
         const saltRounds = 10;
         let hashedPassword = ""
