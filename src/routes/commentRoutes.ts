@@ -1,3 +1,5 @@
+const { dislikeComment, likeComment } = require("../controllers/commentControllers")
+
 const { deleteComment } = require("../controllers/commentControllers")
 
 const { updateComment } = require("../controllers/commentControllers")
@@ -17,6 +19,8 @@ router.get("/:id", getAllCommentOfaVideo)
 router.post("/:id", isAuthenticated, commentOnVideo)
 router.put("/:id", isAuthenticated, updateComment)
 router.delete("/:id", isAuthenticated, deleteComment)
+router.put("/like/:id", isAuthenticated, likeComment)
+router.put("/dislike/:id", isAuthenticated, dislikeComment)
 
 
 

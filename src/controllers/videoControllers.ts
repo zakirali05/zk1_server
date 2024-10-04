@@ -212,16 +212,7 @@ export const likeVideo = async (req: any, res: any) => {
                 }
             })
 
-            const decerementCount = await prismaDB?.video?.update({
-                where: {
-                    id
-                },
-                data: {
-                    dislikes: {
-                        decrement: 1
-                    }
-                }
-            })
+           
             const liked = await prismaDB.like.create({
                 data: {
                     userId: req?.user?.user,
@@ -229,18 +220,9 @@ export const likeVideo = async (req: any, res: any) => {
                 }
             })
 
-            const increaseCount = await prismaDB.video.update({
-                where: {
-                    id
-                },
-                data: {
-                    likes: {
-                        increment: 1
-                    }
-                }
-            })
+           
 
-            if (increaseCount && liked && removeDisLike && decerementCount) {
+            if (  liked && removeDisLike ) {
                 return res.json({ status: 200, message: `Video with id:${id} liked` })
             }
         }
@@ -252,19 +234,10 @@ export const likeVideo = async (req: any, res: any) => {
             }
         })
 
-        const decerementCount = await prismaDB?.video?.update({
-            where: {
-                id
-            },
-            data: {
-                likes: {
-                    decrement: 1
-                }
-            }
-        })
+       
 
 
-        if (decerementCount && removeLike) {
+        if (removeLike) {
             return res?.json({ status: 200, message: `Remove like from video with id:${id}` })
         }
 
@@ -310,16 +283,7 @@ export const dislikeVideo = async (req: any, res: any) => {
                 }
             })
 
-            const decerementCount = await prismaDB?.video?.update({
-                where: {
-                    id
-                },
-                data: {
-                    likes: {
-                        decrement: 1
-                    }
-                }
-            })
+          
 
             const dislikes = await prismaDB.disLike.create({
                 data: {
@@ -328,18 +292,9 @@ export const dislikeVideo = async (req: any, res: any) => {
                 }
             })
 
-            const increaseCount = await prismaDB.video.update({
-                where: {
-                    id
-                },
-                data: {
-                    dislikes: {
-                        increment: 1
-                    }
-                }
-            })
+          
 
-            if (increaseCount && dislikes && decerementCount && removeLike) {
+            if (  dislikes && removeLike) {
                 return res.json({ status: 200, message: `Video with id:${id} disliked` })
             }
         }
@@ -351,19 +306,10 @@ export const dislikeVideo = async (req: any, res: any) => {
             }
         })
 
-        const decerementCount = await prismaDB?.video?.update({
-            where: {
-                id
-            },
-            data: {
-                dislikes: {
-                    decrement: 1
-                }
-            }
-        })
+   
 
 
-        if (decerementCount && removeDisLike) {
+        if (removeDisLike) {
             return res?.json({ status: 200, message: `Remove dislike from video with id:${id}` })
         }
 

@@ -8,16 +8,18 @@ datasource db {
 }
 
 model User {
-  id                  Int       @id @default(autoincrement())
-  email               String    @unique
+  id                  Int              @id @default(autoincrement())
+  email               String           @unique
   hashedPassword      String
   solanaPublicAddress String?
   channels            Channel[]
   comments            Comment[]
   likedVideos         Like[]
   dislikeVideos       DisLike[]
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
+  likedComments       LikeComment[]
+  dislikedComments    DislikeComment[]
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
 }
 
 model Channel {
@@ -34,14 +36,12 @@ model Channel {
 }
 
 model Video {
-  id Int @id @default(autoincrement())
+  id           Int       @id @default(autoincrement())
   videoUrl     String
   thumbnailUrl String
   title        String
   description  String
-  views        Int @default(0)
-  likes        Int @default(0)
-  dislikes     Int @default(0)
+  views        Int       @default(0)
   comments     Comment[]
   likers       Like[]
   dislikers    DisLike[]
@@ -52,14 +52,16 @@ model Video {
 }
 
 model Comment {
-  id        Int      @id @default(autoincrement())
+  id        Int              @id @default(autoincrement())
   comment   String
-  Video     Video?   @relation(fields: [videoId], references: [id])
+  likes     LikeComment[]
+  dislikes  DislikeComment[]
+  Video     Video?           @relation(fields: [videoId], references: [id])
   videoId   Int?
-  User      User?    @relation(fields: [userId], references: [id])
+  User      User?            @relation(fields: [userId], references: [id])
   userId    Int?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
 }
 
 model Like {
@@ -80,4 +82,24 @@ model DisLike {
   videoId   Int?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model LikeComment {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Comment   Comment? @relation(fields: [commentId], references: [id])
+  commentId Int?
+  User      User?    @relation(fields: [userId], references: [id])
+  userId    Int?
+}
+
+model DislikeComment {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Comment   Comment? @relation(fields: [commentId], references: [id])
+  commentId Int?
+  User      User?    @relation(fields: [userId], references: [id])
+  userId    Int?
 }

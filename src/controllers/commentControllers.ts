@@ -137,3 +137,124 @@ export const deleteComment = async (req: any, res: any) => {
 
     }
 }
+
+
+export const likeComment = async (req: any, res: any) => {
+    try {
+        let { id } = req?.params
+        id = parseInt(id)
+
+        const isComment = await prismaDB.comment.findUnique({
+            where: {
+                id
+            }
+        })
+
+        if (!isComment) {
+            return res.json({ status: 404, message: `Comment with id : ${id} doesn't exists` })
+        }
+
+        const isLiked = await prismaDB.likeComment.findFirst({
+            where: {
+                userId: req?.user?.user,
+                commentId: id
+            }
+        })
+
+        if (isLiked) {
+            const removedLike = await prismaDB.likeComment.delete({
+                where: {
+                    id: isLiked?.id
+                }
+            })
+            if (removedLike) {
+                return res.json({ status: 200, message: `Your like on comment id:${id} is removed` })
+            }
+
+        }
+
+        const removeDisLike = await prismaDB.dislikeComment.deleteMany({
+            where: {
+                userId: req?.user?.user,
+                commentId: id
+            }
+        })
+
+        const liked = await prismaDB.likeComment.create({
+            data: {
+                userId: req?.user?.user,
+                commentId: id
+            }
+        })
+        if (liked && removeDisLike) {
+            return res.json({ status: 200, message: `Comment with id : ${id} liked` })
+        }
+
+    } catch (err: any) {
+        return res.json({ status: 500, message: err.message })
+
+    }
+}
+
+
+export const dislikeComment = async (req: any, res: any) => {
+    try {
+
+        let { id } = req?.params
+        id = parseInt(id)
+
+        const isComment = await prismaDB.comment.findUnique({
+            where: {
+                id
+            }
+        })
+
+        if (!isComment) {
+            return res.json({ status: 404, message: `Comment with id : ${id} doesn't exists` })
+        }
+
+
+
+
+
+        const isDisLiked = await prismaDB.dislikeComment.findFirst({
+            where: {
+                userId: req?.user?.user,
+                commentId: id
+            }
+        })
+
+        if (isDisLiked) {
+            const removedDisLike = await prismaDB.dislikeComment.delete({
+                where: {
+                    id: isDisLiked?.id
+                }
+            })
+            if (removedDisLike) {
+                return res.json({ status: 200, message: `Your dislike on comment id:${id} is removed` })
+            }
+
+        }
+
+        const removeLike = await prismaDB.likeComment.deleteMany({
+            where: {
+                userId: req?.user?.user,
+                commentId: id
+            }
+        })
+
+        const disliked = await prismaDB.dislikeComment.create({
+            data: {
+                userId: req?.user?.user,
+                commentId: id
+            }
+        })
+        if (disliked && removeLike) {
+            return res.json({ status: 200, message: `Comment with id : ${id} disliked` })
+        }
+
+    } catch (err: any) {
+        return res.json({ status: 500, message: err.message })
+
+    }
+}
