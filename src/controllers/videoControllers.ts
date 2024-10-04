@@ -18,7 +18,12 @@ export const getVideoById = async (req: any, res: any) => {
                 id
             },
             include: {
-                comments: true
+                comments: {
+                    include: {
+                        likes: true,
+                        dislikes: true
+                    }
+                }
             }
         })
 
@@ -212,7 +217,7 @@ export const likeVideo = async (req: any, res: any) => {
                 }
             })
 
-           
+
             const liked = await prismaDB.like.create({
                 data: {
                     userId: req?.user?.user,
@@ -220,9 +225,9 @@ export const likeVideo = async (req: any, res: any) => {
                 }
             })
 
-           
 
-            if (  liked && removeDisLike ) {
+
+            if (liked && removeDisLike) {
                 return res.json({ status: 200, message: `Video with id:${id} liked` })
             }
         }
@@ -234,7 +239,7 @@ export const likeVideo = async (req: any, res: any) => {
             }
         })
 
-       
+
 
 
         if (removeLike) {
@@ -283,7 +288,7 @@ export const dislikeVideo = async (req: any, res: any) => {
                 }
             })
 
-          
+
 
             const dislikes = await prismaDB.disLike.create({
                 data: {
@@ -292,9 +297,9 @@ export const dislikeVideo = async (req: any, res: any) => {
                 }
             })
 
-          
 
-            if (  dislikes && removeLike) {
+
+            if (dislikes && removeLike) {
                 return res.json({ status: 200, message: `Video with id:${id} disliked` })
             }
         }
@@ -306,7 +311,7 @@ export const dislikeVideo = async (req: any, res: any) => {
             }
         })
 
-   
+
 
 
         if (removeDisLike) {

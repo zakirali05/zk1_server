@@ -11,6 +11,7 @@ export const commentOnVideo = async (req: any, res: any) => {
             where: {
                 id
             }
+
         })
 
         if (!doesVideoExists) {
@@ -46,7 +47,12 @@ export const getAllCommentOfaVideo = async (req: any, res: any) => {
                 id
             },
             include: {
-                comments: true
+                comments: {
+                    include: {
+                        likes: true,
+                        dislikes: true
+                    }
+                }
             }
         })
 
