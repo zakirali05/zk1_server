@@ -26,3 +26,13 @@ app.use("/api/v1/comment", commentRoutes)
 app.listen(process.env.PORT, () => {
   console.log(`Server started on post ${process.env.PORT}`);
 });
+
+
+
+/* 
+TODO
+1. LIKE DISLIKE FOR COMMENTS
+2. UPLOAD , UPDATE , DELETE THE VIDEO USING AWS
+3. VECTORE DATABASE
+4. AI INTEGRATION
+*/

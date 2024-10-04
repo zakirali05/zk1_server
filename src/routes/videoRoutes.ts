@@ -9,9 +9,9 @@ const router = express.Router()
 
 router.get("/", getAllVideos)
 router.get("/:id", getVideoById)
-router.post("/", isAuthenticated, uploadVideo)
-router.put("/:id", isAuthenticated, editVideo)
-router.delete("/:id", isAuthenticated, deleteVideo)
+router.post("/:channelId", isAuthenticated, uploadVideo)
+router.put("/:channelId/:id", isAuthenticated, editVideo)
+router.delete("/:channelId/:id", isAuthenticated, deleteVideo)
 router.put("/like/:id", isAuthenticated, likeVideo)
 router.put("/dislike/:id", isAuthenticated, dislikeVideo)
 
