@@ -16,6 +16,9 @@ export const getVideoById = async (req: any, res: any) => {
         const videoExists = await prismaDB.video.findUnique({
             where: {
                 id
+            },
+            include: {
+                comments: true
             }
         })
 
@@ -241,40 +244,6 @@ export const dislikeVideo = async (req: any, res: any) => {
 
         if (decerementCount && removeDisLike) {
             return res?.json({ status: 200, message: `Remove dislike from video with id:${id}` })
-        }
-
-    } catch (err: any) {
-        return res.json({ status: 500, message: err.message })
-    }
-}
-
-
-export const commentOnVideo = async (req: any, res: any) => {
-    try {
-        let { id } = req?.params
-        id = parseInt(id)
-        const { comment } = req.body
-
-        const doesVideoExists = await prismaDB.video.findUnique({
-            where: {
-                id
-            }
-        })
-
-        if (!doesVideoExists) {
-            return res.json({ status: 404, message: `Video with id:${id} doesn't exist` })
-        }
-
-        const commented = await prismaDB.comment.create({
-            data: {
-                comment,
-                userId: req?.user?.user,
-                videoId: id
-            }
-        })
-
-        if (commented) {
-            return res.json({ status: 200, message: `You commented on "${comment}" video with id:${id}` })
         }
 
     } catch (err: any) {
