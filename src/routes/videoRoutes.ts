@@ -12,9 +12,9 @@ router.get("/:id", getVideoById)
 router.post("/", isAuthenticated, uploadVideo)
 router.put("/:id", isAuthenticated, editVideo)
 router.delete("/:id", isAuthenticated, deleteVideo)
-router.put("/:id", isAuthenticated, likeVideo)
-router.put("/:id", isAuthenticated, dislikeVideo)
-router.put("/:id", isAuthenticated, commentOnVideo)
+router.put("/like/:id", isAuthenticated, likeVideo)
+router.put("/dislike/:id", isAuthenticated, dislikeVideo)
+router.put("/comment/:id", isAuthenticated, commentOnVideo)
 
 
 

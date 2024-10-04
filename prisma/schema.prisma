@@ -8,14 +8,16 @@ datasource db {
 }
 
 model User {
-  id        Int       @id @default(autoincrement())
-  email     String    @unique
-  hashedPassword String
+  id                  Int       @id @default(autoincrement())
+  email               String    @unique
+  hashedPassword      String
   solanaPublicAddress String?
-  channels  Channel[]
-  comments  Comment[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  channels            Channel[]
+  comments            Comment[]
+  likedVideos         Like[]
+  dislikeVideos       DisLike[]
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
 }
 
 model Channel {
@@ -42,6 +44,8 @@ model Video {
   likes        Int
   dislikes     Int
   comments     Comment[]
+  likers       Like[]
+  dislikers    DisLike[]
   Channel      Channel?  @relation(fields: [channelId], references: [id])
   channelId    Int?
   createdAt    DateTime  @default(now())
@@ -51,12 +55,30 @@ model Video {
 model Comment {
   id        Int      @id @default(autoincrement())
   comment   String
-  likes     Int
-  dislikes  Int
   Video     Video?   @relation(fields: [videoId], references: [id])
   videoId   Int?
   User      User?    @relation(fields: [userId], references: [id])
   userId    Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Like {
+  id        Int      @id @default(autoincrement())
+  User      User?    @relation(fields: [userId], references: [id])
+  userId    Int?
+  Video     Video?   @relation(fields: [videoId], references: [id])
+  videoId   Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model DisLike {
+  id        Int      @id @default(autoincrement())
+  User      User?    @relation(fields: [userId], references: [id])
+  userId    Int?
+  Video     Video?   @relation(fields: [videoId], references: [id])
+  videoId   Int?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
